@@ -1,5 +1,3 @@
-1. Install Ansible on your control node using the system package manager.
-$ sudo apt update
 $ sudo apt install software-properties-common
 $ sudo add-apt-repository --yes --update ppa:ansible/ansible
 $ sudo apt install ansible
@@ -8,7 +6,6 @@ Error/Warning: If user not in the sudoers list, run the following commands
 • sudo usermod -aG sudo “username”
 • su “username”
 
-2. Ensure Ansible is installed successfully
 ansible --version
 Error: UTF-8 encoding expected for ansible, run the following commands
 • sudo nano /etc/default/locale
@@ -20,40 +17,33 @@ LC_CTYPE="en.US.UTF-8"
 sudo update-locale LANG=en_US.UTF-8 LC_CTYPE=en_US.UTF-8
 • Restart
 
-3. Creating SSH Key - Creates a public/private SSH key pair for secure password
-less access.
+
 ssh-keygen -t rsa -C "devops default"
 
-4. Copying SSH Key to server - Enables password less SSH login by copying the key
-to managed nodes.
 ssh-copy-id -i ~/.ssh/id_rsa.pub "ipaddress"
 Error: port 22, Connection Refused, run the following commands
 
 sudo apt install openssh-server
 sudo systemctl restart ssh
 
-5. Testing the new Key - Verifies successful login to remote servers without a password.
 ssh -i ~/.ssh/"keyname" "ipaddress"
 
-6. Connecting to Server
-ssh "Ip address"
 
-7. Create Inventory File - Lists all managed servers in a structured format for Ansible
-to use.
+ssh "Ip address"
+hostname -I
 sudo nano inventory
 
 [servers]
 192.168.1.219
 192.168.1.218
 
-8. Ansible Command to connect with repository provided in the inventory
 ansible all --key-file ~/.ssh/id_rsa -i inventory -m ping
 Error: If permission Denied, run – “chmod 600 ~/.ssh
 Inventory Testing - ansible all -i inventory -m ping
 
 9. Creating playbook named playbook.yml
 sudo nano playbook.yaml
-playbook.yml
+playbook.yaml
 ---
 - name: Echo
   hosts: servers
@@ -65,4 +55,4 @@ playbook.yml
 
 10. Executing playbook
 
-ansible-playbook -i inventory playbook.yml
+ansible-playbook -i inventory playbook.yaml
