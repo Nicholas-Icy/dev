@@ -9,7 +9,7 @@ Error/Warning: If user not in the sudoers list, run the following commands
 • su “username”
 
 2. Ensure Ansible is installed successfully
-ansible - - version
+ansible --version
 Error: UTF-8 encoding expected for ansible, run the following commands
 • sudo nano /etc/default/locale
 • Update the encoding to UTF-8
