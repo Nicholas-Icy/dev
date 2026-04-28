@@ -1,0 +1,1478 @@
+Below is a minimal, exam-ready Spring Boot MVC Login Validator (with MySQL + JPA) that strictly follows your constraints.
+
+1. Folder Structure (tree)
+login-validator/
+ ├── src/main/java/com/example/loginvalidator/
+ │    ├── LoginValidatorApplication.java
+ │    ├── controller/LoginController.java
+ │    ├── model/User.java
+ │    └── repository/UserRepository.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── login.html
+ │    │     └── result.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>login-validator</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/login_db
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (User.java)
+package com.example.loginvalidator.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
+public class User {
+
+    @Id
+    private String username;
+    private String password;
+
+    public User() {}
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+}
+5. Controller Class (LoginController.java)
+package com.example.loginvalidator.controller;
+
+import com.example.loginvalidator.model.User;
+import com.example.loginvalidator.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class LoginController {
+
+    @Autowired
+    private UserRepository repo;
+
+    @GetMapping("/")
+    public String showLogin(Model model) {
+        model.addAttribute("user", new User());
+        return "login";
+    }
+
+    @PostMapping("/validate")
+    public String validate(@ModelAttribute User user, Model model) {
+        User dbUser = repo.findById(user.getUsername()).orElse(null);
+
+        if (dbUser != null && dbUser.getPassword().equals(user.getPassword())) {
+            model.addAttribute("message", "Login Successful");
+        } else {
+            model.addAttribute("message", "Invalid Credentials");
+        }
+
+        return "result";
+    }
+}
+6. Thymeleaf Views
+login.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login Form</h2>
+
+    <form action="/validate" method="post" th:object="${user}">
+        Username: <input type="text" th:field="*{username}" /><br><br>
+        Password: <input type="password" th:field="*{password}" /><br><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository Interface
+package com.example.loginvalidator.repository;
+
+import com.example.loginvalidator.model.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface UserRepository extends JpaRepository<User, String> {
+}
+8. One-line Explanation per File
+LoginValidatorApplication.java – Main Spring Boot entry point
+
+User.java – Entity class mapped to DB table
+
+UserRepository.java – JPA interface for DB operations
+
+LoginController.java – Handles login form and validation logic
+
+login.html – Input form for username & password
+
+result.html – Displays login success/failure
+
+application.properties – DB + app configuration
+
+pom.xml – Maven dependencies
+
+9. Run Command
+mvn spring-boot:run
+If you want, next I can give Student CRUD (most asked in exams) or Vote Eligibility checker (simpler fallback).
+
+
+Login validator without db
+
+Below is a minimal, exam-ready Spring Boot MVC Login Validator (NO DB, hardcoded credentials).
+
+1. Folder Structure (tree)
+login-validator/
+ ├── src/main/java/com/example/loginvalidator/
+ │    ├── LoginValidatorApplication.java
+ │    ├── controller/LoginController.java
+ │    └── model/User.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── login.html
+ │    │     └── result.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>login-validator</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (User.java)
+package com.example.loginvalidator.model;
+
+public class User {
+
+    private String username;
+    private String password;
+
+    public User() {}
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+}
+5. Controller Class (LoginController.java)
+package com.example.loginvalidator.controller;
+
+import com.example.loginvalidator.model.User;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class LoginController {
+
+    @GetMapping("/")
+    public String showLogin(Model model) {
+        model.addAttribute("user", new User());
+        return "login";
+    }
+
+    @PostMapping("/validate")
+    public String validate(@ModelAttribute User user, Model model) {
+
+        // Hardcoded credentials
+        if (user.getUsername().equals("admin") && user.getPassword().equals("1234")) {
+            model.addAttribute("message", "Login Successful");
+        } else {
+            model.addAttribute("message", "Invalid Credentials");
+        }
+
+        return "result";
+    }
+}
+6. Thymeleaf Views
+login.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <h2>Login Form</h2>
+
+    <form action="/validate" method="post" th:object="${user}">
+        Username: <input type="text" th:field="*{username}" /><br><br>
+        Password: <input type="password" th:field="*{password}" /><br><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository
+Not required (No DB used)
+
+8. One-line Explanation per File
+LoginValidatorApplication.java – Main Spring Boot entry point
+
+User.java – Simple POJO for form binding
+
+LoginController.java – Handles form display and login validation
+
+login.html – Login form UI
+
+result.html – Shows validation result
+
+application.properties – Basic app config
+
+pom.xml – Project dependencies
+
+9. Run Command
+mvn spring-boot:run
+If you’re optimizing for exam speed: this version is safer—no DB setup, fewer failure points.
+
+Say next and I’ll give Vote Eligibility (even faster to write).
+
+
+mobile number validator with db
+
+Below is a minimal, exam-ready Spring Boot MVC Mobile Number Validator (with MySQL + JPA).
+
+1. Folder Structure (tree)
+mobile-validator/
+ ├── src/main/java/com/example/mobilevalidator/
+ │    ├── MobileValidatorApplication.java
+ │    ├── controller/MobileController.java
+ │    ├── model/Mobile.java
+ │    └── repository/MobileRepository.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── form.html
+ │    │     └── result.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>mobile-validator</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/mobile_db
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (Mobile.java)
+package com.example.mobilevalidator.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Mobile {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String number;
+
+    public Mobile() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getNumber() { return number; }
+    public void setNumber(String number) { this.number = number; }
+}
+5. Controller Class (MobileController.java)
+package com.example.mobilevalidator.controller;
+
+import com.example.mobilevalidator.model.Mobile;
+import com.example.mobilevalidator.repository.MobileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class MobileController {
+
+    @Autowired
+    private MobileRepository repo;
+
+    @GetMapping("/")
+    public String showForm(Model model) {
+        model.addAttribute("mobile", new Mobile());
+        return "form";
+    }
+
+    @PostMapping("/validate")
+    public String validate(@ModelAttribute Mobile mobile, Model model) {
+
+        String num = mobile.getNumber();
+
+        // Validation: must be exactly 10 digits
+        if (num.matches("\\d{10}")) {
+            repo.save(mobile);
+            model.addAttribute("message", "Valid Mobile Number (Saved)");
+        } else {
+            model.addAttribute("message", "Invalid Mobile Number");
+        }
+
+        return "result";
+    }
+}
+6. Thymeleaf Views
+form.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mobile Validator</title>
+</head>
+<body>
+    <h2>Enter Mobile Number</h2>
+
+    <form action="/validate" method="post" th:object="${mobile}">
+        Mobile: <input type="text" th:field="*{number}" /><br><br>
+        <button type="submit">Validate</button>
+    </form>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository Interface
+package com.example.mobilevalidator.repository;
+
+import com.example.mobilevalidator.model.Mobile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface MobileRepository extends JpaRepository<Mobile, Long> {
+}
+8. One-line Explanation per File
+MobileValidatorApplication.java – Main Spring Boot entry point
+
+Mobile.java – Entity storing mobile numbers
+
+MobileRepository.java – JPA interface for DB operations
+
+MobileController.java – Handles validation + save logic
+
+form.html – Input form for mobile number
+
+result.html – Displays validation result
+
+application.properties – DB + app config
+
+pom.xml – Dependencies
+
+9. Run Command
+mvn spring-boot:run
+If you want a slightly safer exam version, I can simplify validation (no regex, just length check) or give a Student CRUD (very high probability question) next.
+
+
+without db'
+
+Below is a minimal, exam-ready Spring Boot MVC Mobile Number Validator (NO DB).
+
+1. Folder Structure (tree)
+mobile-validator/
+ ├── src/main/java/com/example/mobilevalidator/
+ │    ├── MobileValidatorApplication.java
+ │    ├── controller/MobileController.java
+ │    └── model/Mobile.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── form.html
+ │    │     └── result.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>mobile-validator</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (Mobile.java)
+package com.example.mobilevalidator.model;
+
+public class Mobile {
+
+    private String number;
+
+    public Mobile() {}
+
+    public String getNumber() { return number; }
+    public void setNumber(String number) { this.number = number; }
+}
+5. Controller Class (MobileController.java)
+package com.example.mobilevalidator.controller;
+
+import com.example.mobilevalidator.model.Mobile;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class MobileController {
+
+    @GetMapping("/")
+    public String showForm(Model model) {
+        model.addAttribute("mobile", new Mobile());
+        return "form";
+    }
+
+    @PostMapping("/validate")
+    public String validate(@ModelAttribute Mobile mobile, Model model) {
+
+        String num = mobile.getNumber();
+
+        // Validation: exactly 10 digits
+        if (num != null && num.matches("\\d{10}")) {
+            model.addAttribute("message", "Valid Mobile Number");
+        } else {
+            model.addAttribute("message", "Invalid Mobile Number");
+        }
+
+        return "result";
+    }
+}
+6. Thymeleaf Views
+form.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Mobile Validator</title>
+</head>
+<body>
+    <h2>Enter Mobile Number</h2>
+
+    <form action="/validate" method="post" th:object="${mobile}">
+        Mobile: <input type="text" th:field="*{number}" /><br><br>
+        <button type="submit">Validate</button>
+    </form>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository
+Not required (No DB used)
+
+8. One-line Explanation per File
+MobileValidatorApplication.java – Main Spring Boot entry point
+
+Mobile.java – POJO for form input binding
+
+MobileController.java – Handles validation logic
+
+form.html – Input form for mobile number
+
+result.html – Displays validation result
+
+application.properties – Basic configuration
+
+pom.xml – Project dependencies
+
+9. Run Command
+mvn spring-boot:run
+This is the lowest-risk exam version: no DB, one validation rule, minimal code.
+
+Say next for Student CRUD or Vote Eligibility.
+
+
+vote eligibility with db 
+
+Below is a minimal, exam-ready Spring Boot MVC Vote Eligibility App (with MySQL + JPA).
+
+1. Folder Structure (tree)
+vote-app/
+ ├── src/main/java/com/example/voteapp/
+ │    ├── VoteAppApplication.java
+ │    ├── controller/VoteController.java
+ │    ├── model/Voter.java
+ │    └── repository/VoterRepository.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── form.html
+ │    │     └── result.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>vote-app</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/vote_db
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (Voter.java)
+package com.example.voteapp.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity
+public class Voter {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private int age;
+
+    public Voter() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+5. Controller Class (VoteController.java)
+package com.example.voteapp.controller;
+
+import com.example.voteapp.model.Voter;
+import com.example.voteapp.repository.VoterRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class VoteController {
+
+    @Autowired
+    private VoterRepository repo;
+
+    @GetMapping("/")
+    public String showForm(Model model) {
+        model.addAttribute("voter", new Voter());
+        return "form";
+    }
+
+    @PostMapping("/check")
+    public String check(@ModelAttribute Voter voter, Model model) {
+
+        repo.save(voter); // save data
+
+        if (voter.getAge() >= 18) {
+            model.addAttribute("message", "Eligible to Vote");
+        } else {
+            model.addAttribute("message", "Not Eligible to Vote");
+        }
+
+        return "result";
+    }
+}
+6. Thymeleaf Views
+form.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vote Eligibility</title>
+</head>
+<body>
+    <h2>Check Vote Eligibility</h2>
+
+    <form action="/check" method="post" th:object="${voter}">
+        Name: <input type="text" th:field="*{name}" /><br><br>
+        Age: <input type="number" th:field="*{age}" /><br><br>
+        <button type="submit">Check</button>
+    </form>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository Interface
+package com.example.voteapp.repository;
+
+import com.example.voteapp.model.Voter;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface VoterRepository extends JpaRepository<Voter, Long> {
+}
+8. One-line Explanation per File
+VoteAppApplication.java – Main Spring Boot entry point
+
+Voter.java – Entity storing name and age
+
+VoterRepository.java – JPA interface for DB operations
+
+VoteController.java – Handles form and eligibility logic
+
+form.html – Input form for voter details
+
+result.html – Displays eligibility result
+
+application.properties – DB + app configuration
+
+pom.xml – Dependencies
+
+9. Run Command
+mvn spring-boot:run
+If you want a high-scoring upgrade, I can add:
+
+“View all voters” page (CRUD-lite)
+
+Input validation (age > 0)
+
+Bootstrap styling (still exam-safe)
+
+Say next.
+
+
+without db
+
+Below is a minimal, exam-ready Spring Boot MVC Vote Eligibility App (NO DB).
+
+1. Folder Structure (tree)
+vote-app/
+ ├── src/main/java/com/example/voteapp/
+ │    ├── VoteAppApplication.java
+ │    ├── controller/VoteController.java
+ │    └── model/Voter.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── form.html
+ │    │     └── result.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>vote-app</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (Voter.java)
+package com.example.voteapp.model;
+
+public class Voter {
+
+    private String name;
+    private int age;
+
+    public Voter() {}
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
+    public int getAge() { return age; }
+    public void setAge(int age) { this.age = age; }
+}
+5. Controller Class (VoteController.java)
+package com.example.voteapp.controller;
+
+import com.example.voteapp.model.Voter;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class VoteController {
+
+    @GetMapping("/")
+    public String showForm(Model model) {
+        model.addAttribute("voter", new Voter());
+        return "form";
+    }
+
+    @PostMapping("/check")
+    public String check(@ModelAttribute Voter voter, Model model) {
+
+        if (voter.getAge() >= 18) {
+            model.addAttribute("message", "Eligible to Vote");
+        } else {
+            model.addAttribute("message", "Not Eligible to Vote");
+        }
+
+        return "result";
+    }
+}
+6. Thymeleaf Views
+form.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Vote Eligibility</title>
+</head>
+<body>
+    <h2>Check Vote Eligibility</h2>
+
+    <form action="/check" method="post" th:object="${voter}">
+        Name: <input type="text" th:field="*{name}" /><br><br>
+        Age: <input type="number" th:field="*{age}" /><br><br>
+        <button type="submit">Check</button>
+    </form>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Result</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository
+Not required (No DB used)
+
+8. One-line Explanation per File
+VoteAppApplication.java – Main Spring Boot entry point
+
+Voter.java – POJO for name and age input
+
+VoteController.java – Handles eligibility logic
+
+form.html – Form for user input
+
+result.html – Displays result
+
+application.properties – Basic config
+
+pom.xml – Dependencies
+
+9. Run Command
+mvn spring-boot:run
+This version minimizes setup risk and is faster to write under time constraints.
+
+
+student greeting with db 
+
+Below is a minimal, exam-ready Spring Boot MVC Student Greeting App (with MySQL + JPA + View All).
+
+1. Folder Structure (tree)
+student-greeting/
+ ├── src/main/java/com/example/studentgreeting/
+ │    ├── StudentGreetingApplication.java
+ │    ├── controller/StudentController.java
+ │    ├── model/Student.java
+ │    └── repository/StudentRepository.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── form.html
+ │    │     ├── result.html
+ │    │     └── view.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>student-greeting</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+
+        <!-- JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- MySQL -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.datasource.url=jdbc:mysql://localhost:3306/student_db
+spring.datasource.username=root
+spring.datasource.password=yourpassword
+
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (Student.java)
+package com.example.studentgreeting.model;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Student {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+
+    public Student() {}
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+5. Controller Class (StudentController.java)
+package com.example.studentgreeting.controller;
+
+import com.example.studentgreeting.model.Student;
+import com.example.studentgreeting.repository.StudentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+public class StudentController {
+
+    @Autowired
+    private StudentRepository repo;
+
+    @GetMapping("/")
+    public String showForm(Model model) {
+        model.addAttribute("student", new Student());
+        return "form";
+    }
+
+    @PostMapping("/greet")
+    public String greet(@ModelAttribute Student student, Model model) {
+
+        repo.save(student);
+
+        model.addAttribute("message", "Hello, " + student.getName() + "!");
+        return "result";
+    }
+
+    @GetMapping("/view")
+    public String viewAll(Model model) {
+        model.addAttribute("students", repo.findAll());
+        return "view";
+    }
+}
+6. Thymeleaf Views
+form.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Greeting</title>
+</head>
+<body>
+    <h2>Enter Student Name</h2>
+
+    <form action="/greet" method="post" th:object="${student}">
+        Name: <input type="text" th:field="*{name}" /><br><br>
+        <button type="submit">Greet</button>
+    </form>
+
+    <br>
+    <a href="/view">View All Students</a>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Greeting</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+view.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Students</title>
+</head>
+<body>
+    <h2>Student List</h2>
+
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+        </tr>
+
+        <tr th:each="s : ${students}">
+            <td th:text="${s.id}"></td>
+            <td th:text="${s.name}"></td>
+        </tr>
+    </table>
+
+    <br>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository Interface
+package com.example.studentgreeting.repository;
+
+import com.example.studentgreeting.model.Student;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface StudentRepository extends JpaRepository<Student, Long> {
+}
+8. One-line Explanation per File
+StudentGreetingApplication.java – Main Spring Boot entry point
+
+Student.java – Entity storing student name
+
+StudentRepository.java – JPA interface for DB operations
+
+StudentController.java – Handles greeting + view all logic
+
+form.html – Input form + navigation
+
+result.html – Displays greeting
+
+view.html – Displays all saved students
+
+application.properties – DB configuration
+
+pom.xml – Dependencies
+
+9. Run Command
+mvn spring-boot:run
+
+without db
+
+Below is a minimal, exam-ready Spring Boot MVC Student Greeting App (NO DB + View All using in-memory list).
+
+1. Folder Structure (tree)
+student-greeting/
+ ├── src/main/java/com/example/studentgreeting/
+ │    ├── StudentGreetingApplication.java
+ │    ├── controller/StudentController.java
+ │    └── model/Student.java
+ │
+ ├── src/main/resources/
+ │    ├── templates/
+ │    │     ├── form.html
+ │    │     ├── result.html
+ │    │     └── view.html
+ │    └── application.properties
+ │
+ └── pom.xml
+2. pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>student-greeting</artifactId>
+    <version>1.0</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.5</version>
+    </parent>
+
+    <dependencies>
+        <!-- Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+    </dependencies>
+
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+
+</project>
+3. application.properties
+spring.thymeleaf.cache=false
+server.port=8080
+4. Model Class (Student.java)
+package com.example.studentgreeting.model;
+
+public class Student {
+
+    private String name;
+
+    public Student() {}
+
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+}
+5. Controller Class (StudentController.java)
+package com.example.studentgreeting.controller;
+
+import com.example.studentgreeting.model.Student;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Controller
+public class StudentController {
+
+    // In-memory storage
+    private List<Student> studentList = new ArrayList<>();
+
+    @GetMapping("/")
+    public String showForm(Model model) {
+        model.addAttribute("student", new Student());
+        return "form";
+    }
+
+    @PostMapping("/greet")
+    public String greet(@ModelAttribute Student student, Model model) {
+
+        studentList.add(student);
+
+        model.addAttribute("message", "Hello, " + student.getName() + "!");
+        return "result";
+    }
+
+    @GetMapping("/view")
+    public String viewAll(Model model) {
+        model.addAttribute("students", studentList);
+        return "view";
+    }
+}
+6. Thymeleaf Views
+form.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Greeting</title>
+</head>
+<body>
+    <h2>Enter Student Name</h2>
+
+    <form action="/greet" method="post" th:object="${student}">
+        Name: <input type="text" th:field="*{name}" /><br><br>
+        <button type="submit">Greet</button>
+    </form>
+
+    <br>
+    <a href="/view">View All Students</a>
+</body>
+</html>
+result.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Greeting</title>
+</head>
+<body>
+    <h2 th:text="${message}"></h2>
+    <a href="/">Back</a>
+</body>
+</html>
+view.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>All Students</title>
+</head>
+<body>
+    <h2>Student List</h2>
+
+    <table border="1">
+        <tr>
+            <th>Name</th>
+        </tr>
+
+        <tr th:each="s : ${students}">
+            <td th:text="${s.name}"></td>
+        </tr>
+    </table>
+
+    <br>
+    <a href="/">Back</a>
+</body>
+</html>
+7. Repository
+Not required (In-memory list used instead of DB)
+
+8. One-line Explanation per File
+StudentGreetingApplication.java – Main Spring Boot entry point
+
+Student.java – POJO for student name
+
+StudentController.java – Handles greeting + stores list + view all
+
+form.html – Input form + navigation
+
+result.html – Displays greeting
+
+view.html – Displays all entered students
+
+application.properties – Basic config
+
+pom.xml – Dependencies
+
+9. Run Command
+mvn spring-boot:run
+This version keeps everything in-memory, avoids DB setup, and still covers CRUD-lite (add + view)—good enough for most practical exams.
+
+
+
